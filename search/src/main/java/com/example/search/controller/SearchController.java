@@ -7,6 +7,8 @@ import com.example.search.entity.University;
 import com.example.search.service.SearchService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.TimeUnit;
 
 @RestController
+@Api(value = "Search APIs")
 public class SearchController {
 
     private SearchService searchService;
@@ -32,12 +35,10 @@ public class SearchController {
         return new ResponseEntity<>("this is search service", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get data from student service and university service")
     @HystrixCommand(fallbackMethod = "getResultFallBack", commandProperties = {
-            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000"),
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
             @HystrixProperty(name = "circuitBreaker.enabled", value = "true"),
-            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
-            @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),
-            @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60"),
     })
     @GetMapping("/weather/search/result")
     public BaseResponse<Result> getResult() {
